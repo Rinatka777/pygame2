@@ -54,6 +54,12 @@ def main():
         for obj in updatable:
             # Manually call update with dt since Group.update() doesn't pass parameters
             obj.update(dt)
+        # After updating, check for collisions between the player and asteroids
+        for asteroid in asteroids:
+            if player.collides_with(asteroid):
+                print("Game over!")
+                pygame.quit()
+                sys.exit()  # Immediately exit the program
 
     # Fill the screen with black color
         screen.fill((0, 0, 0))

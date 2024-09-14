@@ -47,6 +47,7 @@ def main():
     asteroids = pygame.sprite.Group()
     # Create a group for shots (bullets)
     shots = pygame.sprite.Group()
+
     Asteroid.containers = (asteroids, updatable, drawable)
     # Game loop
     while True:
@@ -58,7 +59,12 @@ def main():
         # Update all objects in the updatable group
         for obj in updatable:
             # Manually call update with dt since Group.update() doesn't pass parameters
-            obj.update(dt)
+            new_shot = obj.update(dt)  # Capture the returned shot
+            if new_shot:  # If a shot was returned
+                shots.add(new_shot)  # Add the new shot to the shots group
+                updatable.add(new_shot)
+                drawable.add(new_shot)
+                     
         # After updating, check for collisions between the player and asteroids
         for asteroid in asteroids:
             if player.collides_with(asteroid):

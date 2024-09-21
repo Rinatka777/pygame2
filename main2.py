@@ -64,7 +64,7 @@ def main():
                 shots.add(new_shot)  # Add the new shot to the shots group
                 updatable.add(new_shot)
                 drawable.add(new_shot)
-                     
+
         # After updating, check for collisions between the player and asteroids
         for asteroid in asteroids:
             if player.collides_with(asteroid):

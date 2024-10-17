@@ -72,6 +72,27 @@ def main():
                 pygame.quit()
                 sys.exit()  # Immediately exit the program
 
+        for asteroid in asteroids:
+            for bullet in shots:
+                dx = asteroid.position.x - bullet.position.x
+                dy = asteroid.position.y - bullet.position.y
+                distance_squared = dx * dx + dy * dy
+                 # Calculate the squared sum of the radii
+                bullet_radius = 5  # Example bullet radius of 5
+                sum_radii = asteroid.radius + bullet_radius
+                sum_radii_squared = sum_radii * sum_radii
+
+                if distance_squared <= sum_radii_squared:
+                # If collision is detected, remove both the asteroid and the bullet
+                    asteroid.split()  # Remove asteroid from all groups
+                    bullet.kill()    # Remove bullet from all groups
+
+                
+
+           
+
+            # Check if the squared distance is less than or equal to the squared sum of the radii
+            
     # Fill the screen with black color
         screen.fill((0, 0, 0))
     # Draw all objects in the drawable group

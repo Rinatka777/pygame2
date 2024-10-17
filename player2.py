@@ -7,13 +7,14 @@ from shot import Shot
 import math
 
 class Player(CircleShape):
-    containers = None  # This will be set from main2.py
+    
     def __init__(self, x, y):
         # Call the parent class's constructor
         super().__init__(x, y, PLAYER_RADIUS)
         # Create a field called rotation, initialized to 0
         self.radius = 20
         self.rotation = 0
+        self.shoot_timer = 0  # Timer starts at 0, meaning player can shoot immediately
     def rotate (self, dt):
         self.rotation += PLAYER_TURN_SPEED * dt
     def move(self, dt):
@@ -25,6 +26,10 @@ class Player(CircleShape):
 
     def update(self, dt):
         keys = pygame.key.get_pressed()
+        
+        # Decrease the shoot timer by dt to gradually count down
+        if self.shoot_timer > 0:
+            self.shoot_timer -= dt
 
         if keys[pygame.K_a]:
             self.rotate(-dt)  # Rotate left by inverting dt
@@ -35,7 +40,7 @@ class Player(CircleShape):
         if keys[pygame.K_s]:
             self.move (-dt)
         if keys[pygame.K_SPACE]:
-            return self.shoot()
+            return self.shoot() 
         
     def triangle(self):
         forward = pygame.Vector2(0, 1).rotate(self.rotation)
@@ -49,23 +54,26 @@ class Player(CircleShape):
     def draw(self, screen):
         pygame.draw.polygon(screen, "white", self.triangle(), 2)
     def shoot(self):
-    # Forward vector based on the player's current rotation
-        forward = pygame.Vector2(0, -1).rotate(self.rotation)  # Forward is upward by default, then rotated
+        # Only allow shooting if the shoot timer is <= 0
+        if self.shoot_timer <= 0:
+            # Reset the shoot timer to the cooldown value
+            self.shoot_timer = PLAYER_SHOOT_COOLDOWN
 
-    # Calculate the position of the shot (the front tip of the player's triangle)
-    # self.radius is the distance from the center of the player to the tip
-        shot_position = self.position + forward * self.radius  # Place the shot at the tip of the triangle
+            # Set the shot's initial position to the player's current position
+            shot_position = self.position
 
-    # Set the shot's velocity to move forward in the direction the player is facing
-        shot_velocity = forward * PLAYER_SHOOT_SPEED  # Move in the direction the player is facing
+            # Set the shot's velocity to move forward in the direction the player is facing
+            shot_velocity = pygame.Vector2(0, 1).rotate(self.rotation) * PLAYER_SHOOT_SPEED
 
-    # Debugging: Output shot creation details
-        print(f"Shot fired! Position: {shot_position}, Velocity: {shot_velocity}, Rotation: {self.rotation}")
+            # Debugging: Output shot creation details
+            print(f"Shot fired! Position: {shot_position}, Velocity: {shot_velocity}, Rotation: {self.rotation}")
 
-    # Create and return the shot
-        new_shot = Shot(shot_position.x, shot_position.y, shot_velocity)
+            # Create and return the shot
+            new_shot = Shot(shot_position.x, shot_position.y, shot_velocity)
+            return new_shot
 
-        return new_shot
+        # If the timer hasn't reached 0 yet, no shot is fired
+        return None
 
 
 
